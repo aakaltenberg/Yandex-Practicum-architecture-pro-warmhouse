@@ -1,5 +1,5 @@
 ```puml
-@startuml title FitLife Context Diagram
+@startuml title SmartHome Context Diagram
 
 top to bottom direction
 
