@@ -1,6 +1,8 @@
 ```puml
-@startuml
-title SmartHome Container Diagram (Microservices)
+@startuml title SmartHome Container Diagram
+
+top to bottom direction
+
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
 
 Person(user, "Пользователь", "Управляет устройствами")
