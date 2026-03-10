@@ -1,61 +1,70 @@
 ```puml
 @startuml
-title SmartHome Container Diagram
+title SmartHome Container Diagram (Microservices)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
 
-top to bottom direction
+Person(user, "Пользователь", "Управляет устройствами")
+Person(admin, "Администратор", "Управляет настройками устройств")
 
-!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
-
-Person(user, "User", "A user of the smart home system")
-Person(admin, "Administrator", "An administrator managing the system")
-System(SmartHomeSystem, "SmartHome System", "System managing houses, devices, devices state, scenarios, getting telemetry data")
-
-Container_Boundary(SmartHomeSystem, "SmartHome System") {
-  Container(HouseService, "House Service", ".NET, ASP.NET Core", "Service managing houses")
-  Container(DeviceService, "Device Service", ".NET, ASP.NET Core", "Service managing devices")
-  Container(ScenarioService, "Scenario Service", ".NET, ASP.NET Core", "Service managing scenarios")
-  Container(TelemetryService, "Telemetry Service", ".NET, ASP.NET Core", "Getting telemetry data")
-
-  Container(HouseDatabase, "House Database", "PostgreSQL", "Stores house data")
-  Container(DeviceDatabase, "Device Database", "PostgreSQL", "Stores devices, device state data")
-  Container(ScenarioDatabase, "Scenario Database", "PostgreSQL", "Stores scenario data")
-  Container(TelemetryDatabase, "Telemetry Database", "PostgreSQL", "Stores telemetry data")
-  
-  Container(MessageBroker, "Message Broker", "RabbitMQ", "Async integration betw DeviceService and TelemetryService")
-
-  Container(ApiGateway, "ApiGateway", "Kong", "Authorization, authentification, routing")
+Container_Boundary(smarthome, "SmartHome System") {
+    Container(api_gateway, "API Gateway", "Kong", "Маршрутизация, аутентификация, переадресация")
+    
+    Container(house_service, "House Service", ".NET", "Управление домами и пользователями")
+    Container(heating_service, "Heating Service", ".NET", "Управление отоплением")
+    Container(lighting_service, "Lighting Service", ".NET", "Управление освещением (лампы, выключатели)")
+    Container(camera_service, "Camera Service", ".NET", "Управление камерами")
+    Container(gate_service, "Gate Service", ".NET", "Управление воротами")
+    Container(scenario_service, "Scenario Service", ".NET", "Создание и выполнение сценариев автоматизации")
+    Container(telemetry_service, "Telemetry Service", ".NET", "Сбор и хранение телеметрии")
+    
+    Container(house_db, "House DB", "PostgreSQL", "Данные о домах и пользователях")
+    Container(heating_db, "Heating DB", "PostgreSQL", "Данные об устройствах отопления")
+    Container(lighting_db, "Lighting DB", "PostgreSQL", "Данные об устройствах освещения")
+    Container(camera_db, "Camera DB", "PostgreSQL", "Данные о камерах")
+    Container(gate_db, "Gate DB", "PostgreSQL", "Данные о воротах")
+    Container(scenario_db, "Scenario DB", "PostgreSQL", "Сценарии, правила, действия")
+    Container(telemetry_db, "Telemetry DB", "TimescaleDB", "Данные телеметрии")
+    
+    Container(message_broker, "Message Broker", "RabbitMQ", "События об изменении состояния устройств, команды")
+    
+    Container(device_gateway, "Device Gateway", "MQTT Broker", "Подключение физических устройств по стандартным протоколам")
 }
 
-System_Ext(TemperatureService, "Third-Party temperature device API", "External API for temperature devices integration", "Uses REST API, JSON data format")
-System_Ext(LightService, "Third-Party light device API", "External API for light devices integration", "Uses REST API, JSON data format")
-System_Ext(AutoGatesService, "Third-Party auto gates device API", "External API for auto gates devices integration", "Uses REST API, JSON data format")
-System_Ext(CameraService, "Third-Party camera device API", "External API for camera devices integration", "Uses REST API, JSON data format")
+System_Ext(physical_devices, "Физические устройства", "MQTT", "Датчики отопления, лампы, камеры, ворота")
 
-Rel(user, ApiGateway, "Getting telemetry, setting target value, on/off device, create scenarios") 
-Rel(admin, ApiGateway, "Adding new house, devices, update info about devices, delete devices") 
+Rel(user, api_gateway, "Управление, просмотр", "HTTP")
+Rel(admin, api_gateway, "Добавление новых типов устройств", "HTTP")
 
-Rel(ApiGateway,HouseService,"redirection")
-Rel(ApiGateway,DeviceService,"redirection")
-Rel(ApiGateway,ScenarioService,"redirection")
-Rel(ApiGateway,TelemetryService,"redirection")
+Rel(api_gateway, house_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, heating_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, lighting_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, camera_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, gate_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, scenario_service, "Маршрутизация", "HTTP")
+Rel(api_gateway, telemetry_service, "Маршрутизация", "HTTP")
 
-Rel(TelemetryService,TemperatureService,"getting sync telemetry realtime data for temperature devices")
-Rel(TelemetryService,LightService,"getting sync telemetry realtime data for light devices")
-Rel(TelemetryService,AutoGatesService,"getting sync telemetry realtime data for auto gates devices")
-Rel(TelemetryService,CameraService,"getting sync telemetry realtime data for camera devices")
+Rel(house_service, house_db, "CRUD", "SQL")
+Rel(heating_service, heating_db, "CRUD", "SQL")
+Rel(lighting_service, lighting_db, "CRUD", "SQL")
+Rel(camera_service, camera_db, "CRUD", "SQL")
+Rel(gate_service, gate_db, "CRUD", "SQL")
+Rel(scenario_service, scenario_db, "CRUD", "SQL")
+Rel(telemetry_service, telemetry_db, "CRUD", "SQL")
 
-Rel(DeviceService,TemperatureService,"setting target state/value for temperature devices")
-Rel(DeviceService,LightService,"setting target state/value for light devices")
-Rel(DeviceService,AutoGatesService,"setting target state/value for auto gates devices")
-Rel(DeviceService,CameraService,"setting target state/value for camera devices")
+Rel(heating_service, message_broker, "Публикация событий/команд", "AMQP")
+Rel(lighting_service, message_broker, "Публикация событий/команд", "AMQP")
+Rel(camera_service, message_broker, "Публикация событий/команд", "AMQP")
+Rel(gate_service, message_broker, "Публикация событий/команд", "AMQP")
+Rel(telemetry_service, message_broker, "Подписка на телеметрию", "AMQP")
+Rel(scenario_service, message_broker, "Подписка на события", "AMQP")
 
-Rel(HouseService,HouseDatabase,"CRUD house data")
-Rel(DeviceService,DeviceDatabase,"CRUD devices (temperature, light, autoGates, camera) data")
-Rel(ScenarioService,ScenarioDatabase,"CRUD scenarios (scenario, actions, conditions) data")
-Rel(TelemetryService,TelemetryDatabase,"CRUD telemetry (temperature, light, autoGates, camera) data")
+Rel(heating_service, device_gateway, "Отправка команд устройствам отопления", "MQTT")
+Rel(lighting_service, device_gateway, "Отправка команд устройствам освещения", "MQTT")
+Rel(camera_service, device_gateway, "Отправка команд камерам", "MQTT")
+Rel(gate_service, device_gateway, "Отправка команд воротам", "MQTT")
+Rel(telemetry_service, device_gateway, "Получение потоковых данных", "MQTT")
 
-Rel(DeviceService, MessageBroker, "publishing events about changes in devices (temperature, light, autoGates, camera) state/value")
-Rel(TelemetryService, MessageBroker, "subscribe on events about changes in devices (temperature, light, autoGates, camera) state/value")
+Rel(device_gateway, physical_devices, "Получение команд, публикация событий об изменении состояния (телеметрия)", "MQTT")
 
 @enduml
 ```
