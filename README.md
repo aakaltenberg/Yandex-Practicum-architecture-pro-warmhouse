@@ -55,7 +55,7 @@
 1. Перейти в директорию smart_home_arch_docs
 2. Выполнить команду mkdocs serve
 ```markdown
-[3. Перейти по ссылке](http://127.0.0.1:8000/architecture/smartHome_context/)
+[3. Диаграмма контекста (as is)](http://127.0.0.1:8000/architecture/smartHome_context/)
 ```
 
 # Задание 2. Проектирование микросервисной архитектуры
@@ -65,12 +65,20 @@
 1. Перейти в директорию smart_home_arch_docs
 2. Выполнить команду mkdocs serve
 ```markdown
-[3. Перейти по ссылке](http://127.0.0.1:8000/architecture/smartHome_container/)
+[3. Диаграмма контейнеров (to be)](http://127.0.0.1:8000/architecture/smartHome_container/)
 ```
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+1. Перейти в директорию smart_home_arch_docs
+2. Выполнить команду mkdocs serve
+```markdown
+[3. Диаграмма компонентов (heating_service)](http://127.0.0.1:8000/architecture/heating_service_component/)
+[4. Диаграмма компонентов (house_service)](http://127.0.0.1:8000/architecture/house_service_component/)
+[5. Диаграмма компонентов (telemetry_service)](http://127.0.0.1:8000/architecture/telemetry_service/)
+[6. Диаграмма компонентов (scenario_service)](http://127.0.0.1:8000/architecture/scenario_service_component/)
+
+Диаграмма компонентов lighting_service, camera_service, gate_service аналогична диаграмме компонентов heating_service
 
 **Диаграмма кода (Code)**
 
