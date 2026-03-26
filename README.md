@@ -82,11 +82,23 @@
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+1. Перейти в директорию smart_home_arch_docs
+2. Выполнить команду mkdocs serve
+```markdown
+[3. Диаграмма кода (device_management_service)](http://127.0.0.1:8000/architecture/device_management_service_code/)
+
+Приведен пример диаграммы кода для работы с администрированием устройств системы отопления
 
 # Задание 3. Разработка ER-диаграммы
 
-Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
+1. Перейти в директорию smart_home_arch_docs
+2. Выполнить команду mkdocs serve
+```markdown
+[3. ER-диаграмма heating_service](http://127.0.0.1:8000/er_diagram/er_heating_service/)
+[3. ER-диаграмма house_service](http://127.0.0.1:8000/er_diagram/er_house_service/)
+[3. ER-диаграмма scenatio_service](http://127.0.0.1:8000/er_diagram/er_scenatio_service/)
+
+ER-диаграммы lighting_service, camera_service, gate_service аналогичны ER-диаграмме heating_service
 
 # Задание 4. Создание и документирование API
 

@@ -49,6 +49,7 @@ class DeviceManagementController {
 
 class Device {
   - int Id
+  - long HouseId
   - string Name
   - string Type
   - string Location
@@ -63,6 +64,7 @@ class DeviceCreateDto {
   - string Type
   - string Location
   - string Unit
+  - long HouseId
 }
 
 class DeviceUpdateDto {
