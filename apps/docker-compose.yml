@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -15,6 +13,40 @@ services:
       - smarthome-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gate-db:
+    image: postgres:16-alpine
+    container_name: smarthome-gate-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gate_db
+    volumes:
+      - gate_data:/var/lib/postgresql/data
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: smarthome-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,14 +75,38 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
       - TEMPERATURE_API_URL=http://temperature-api:8081
+      - GATE_SERVICE_URL=http://gate-service:8080
     ports:
       - "8080:8080"
     restart: unless-stopped
     networks:
       - smarthome-network
 
+  gate-service:
+    build:
+      context: ./gate-service
+      dockerfile: Dockerfile
+    container_name: smarthome-gate-service
+    depends_on:
+      gate-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=gate-db;Port=5432;Database=gate_db;Username=postgres;Password=postgres
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5001:8080"
+    networks:
+      - smarthome-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
+  gate_data:
 
 networks:
   smarthome-network:

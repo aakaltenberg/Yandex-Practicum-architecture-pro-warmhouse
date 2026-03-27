@@ -12,6 +12,7 @@ import (
 	"smarthome/db"
 	"smarthome/handlers"
 	"smarthome/services"
+	"smarthome/gateclient"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +47,12 @@ func main() {
 	apiRoutes := router.Group("/api/v1")
 
 	// Register sensor routes
-	sensorHandler := handlers.NewSensorHandler(database, temperatureService)
+	gateServiceURL := os.Getenv("GATE_SERVICE_URL")
+	if gateServiceURL == "" {
+		gateServiceURL = "http://gate-service:8080"
+		}
+	gateClient := gateclient.NewGateClient(gateServiceURL)
+	sensorHandler := handlers.NewSensorHandler(database, temperatureService, gateClient)
 	sensorHandler.RegisterRoutes(apiRoutes)
 
 	// Start server
