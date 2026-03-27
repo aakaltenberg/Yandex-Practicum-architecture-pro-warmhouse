@@ -1,0 +1,81 @@
+asyncapi: '2.6.0'
+info:
+  title: SmartHome (MQTT) AsyncAPI
+  version: '1.1.0'
+  description: Асинхронные взаимодействия между микросервисами SmartHome System
+servers:
+  mqtt:
+    url: mqtt://device-gateway:1883
+    protocol: mqtt
+    description: MQTT брокер для связи с физическими устройствами
+
+channels:
+  # ---- MQTT каналы (Device Gateway) ----
+  devices/{device_id}/command:
+    parameters:
+      device_id: { schema: { type: string } }
+    publish:
+      operationId: sendDeviceCommand
+      message:
+        $ref: '#/components/messages/DeviceCommandMQTT'
+    subscribe:
+      operationId: receiveDeviceCommand
+      message:
+        $ref: '#/components/messages/DeviceCommandMQTT'
+  devices/{device_id}/telemetry:
+    parameters:
+      device_id: { schema: { type: string } }
+    publish:
+      operationId: publishTelemetry
+      message:
+        $ref: '#/components/messages/TelemetryData'
+    subscribe:
+      operationId: subscribeTelemetry
+      message:
+        $ref: '#/components/messages/TelemetryData'
+  devices/{device_id}/ack:
+    parameters:
+      device_id: { schema: { type: string } }
+    publish:
+      operationId: publishCommandAck
+      message:
+        $ref: '#/components/messages/CommandAck'
+    subscribe:
+      operationId: subscribeCommandAck
+      message:
+        $ref: '#/components/messages/CommandAck'
+
+components:
+  messages:
+    DeviceCommandMQTT:
+      summary: Команда для физического устройства (MQTT)
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          command: { type: string }
+          parameters: { type: object }
+          correlationId: { type: string }
+          timestamp: { type: string, format: date-time }
+    TelemetryData:
+      summary: Телеметрия от физического устройства
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          deviceId: { type: string, format: uuid }
+          deviceType: { type: string }
+          value: { type: number }
+          unit: { type: string }
+          timestamp: { type: string, format: date-time }
+    CommandAck:
+      summary: Подтверждение выполнения команды от устройства
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          correlationId: { type: string }
+          deviceId: { type: string, format: uuid }
+          status: { type: string, enum: [success, failure] }
+          result: { type: object }
+          timestamp: { type: string, format: date-time }
