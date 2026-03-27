@@ -104,9 +104,49 @@ services:
       - smarthome-network
     restart: unless-stopped
 
+  telemetry-db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: smarthome-telemetry-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: telemetry_db
+    volumes:
+      - telemetry_data:/var/lib/postgresql/data
+    networks:
+      - smarthome-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  telemetry-service:
+    build:
+      context: ./telemetry-service
+      dockerfile: Dockerfile
+    container_name: smarthome-telemetry-service
+    depends_on:
+      telemetry-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=telemetry-db;Port=5432;Database=telemetry_db;Username=postgres;Password=postgres
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5002:8080"
+    networks:
+      - smarthome-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   gate_data:
+  telemetry_data:
 
 networks:
   smarthome-network:
