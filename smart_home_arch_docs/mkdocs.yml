@@ -6,3 +6,7 @@ markdown_extensions:
 plugins:
   - plantuml:
       puml_url: https://www.plantuml.com/plantuml/
+  - swagger-ui-tag:
+      docExpansion: "list"
+      syntaxHighlightTheme: "monokai"
+      supportedSubmitMethods: ["get", "post", "put", "patch", "delete"]
