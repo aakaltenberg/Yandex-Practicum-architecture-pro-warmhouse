@@ -9,6 +9,7 @@ type SensorType string
 
 const (
 	Temperature SensorType = "temperature"
+	Gate        SensorType = "gate"
 )
 
 // Sensor represents a smart home sensor

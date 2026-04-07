@@ -1,0 +1,1 @@
+<swagger-ui src="/restapi/gate-service-openapi.json"/>

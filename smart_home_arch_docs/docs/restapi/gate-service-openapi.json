@@ -1,0 +1,232 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "GateService",
+      "version": "1.0"
+    },
+    "paths": {
+      "/api/v1/gates": {
+        "get": {
+          "tags": [
+            "Gates"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "Gates"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateCreateDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateCreateDto"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateCreateDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/v1/gates/{id}": {
+        "get": {
+          "tags": [
+            "Gates"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "Gates"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateUpdateDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateUpdateDto"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateUpdateDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Gates"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/v1/gates/{id}/open": {
+        "post": {
+          "tags": [
+            "Gates"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/v1/gates/{id}/close": {
+        "post": {
+          "tags": [
+            "Gates"
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "GateCreateDto": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "name": {
+              "type": "string",
+              "nullable": true
+            },
+            "location": {
+              "type": "string",
+              "nullable": true
+            },
+            "description": {
+              "type": "string",
+              "nullable": true
+            },
+            "houseId": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "GateUpdateDto": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "nullable": true
+            },
+            "location": {
+              "type": "string",
+              "nullable": true
+            },
+            "description": {
+              "type": "string",
+              "nullable": true
+            },
+            "houseId": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }

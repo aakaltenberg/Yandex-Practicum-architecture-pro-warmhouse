@@ -1,0 +1,57 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "TelemetryService",
+      "version": "1.0"
+    },
+    "paths": {
+      "/api/v1/telemetry/{deviceId}": {
+        "get": {
+          "tags": [
+            "Telemetry"
+          ],
+          "parameters": [
+            {
+              "name": "deviceId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "from",
+              "in": "query",
+              "schema": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            {
+              "name": "to",
+              "in": "query",
+              "schema": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32",
+                "default": 100
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      }
+    },
+    "components": { }
+  }

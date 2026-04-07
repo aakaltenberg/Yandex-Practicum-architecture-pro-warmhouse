@@ -1,0 +1,182 @@
+asyncapi: '2.6.0'
+info:
+  title: SmartHome (rabbitMQ) AsyncAPI
+  version: '1.1.0'
+  description: Асинхронные взаимодействия между микросервисами SmartHome System
+servers:
+  rabbitmq:
+    url: amqp://rabbitmq:5672
+    protocol: amqp
+    description: RabbitMQ брокер для событий и команд
+
+channels:
+  # ---- Каналы RabbitMQ для домов и пользователей ----
+  event.house:
+    description: События изменения домов
+    publish:
+      operationId: publishHouseEvent
+      message: { $ref: '#/components/messages/HouseEvent' }
+    subscribe:
+      operationId: subscribeHouseEvent
+      message: { $ref: '#/components/messages/HouseEvent' }
+  event.user:
+    description: События изменения пользователей
+    publish:
+      operationId: publishUserEvent
+      message: { $ref: '#/components/messages/UserEvent' }
+    subscribe:
+      operationId: subscribeUserEvent
+      message: { $ref: '#/components/messages/UserEvent' }
+
+  # ---- События от сервисов устройств ----
+  event.heating:
+    description: События изменения состояния устройств отопления
+    publish:
+      operationId: publishHeatingEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+    subscribe:
+      operationId: subscribeHeatingEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+  event.lighting:
+    description: События изменения состояния устройств освещения
+    publish:
+      operationId: publishLightingEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+    subscribe:
+      operationId: subscribeLightingEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+  event.camera:
+    description: События изменения состояния камер
+    publish:
+      operationId: publishCameraEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+    subscribe:
+      operationId: subscribeCameraEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+  event.gate:
+    description: События изменения состояния ворот
+    publish:
+      operationId: publishGateEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+    subscribe:
+      operationId: subscribeGateEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+
+  # ---- Команды от Scenario Service к сервисам устройств ----
+  command.heating:
+    description: Команды управления устройствами отопления
+    publish:
+      operationId: publishHeatingCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+    subscribe:
+      operationId: subscribeHeatingCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+  command.lighting:
+    description: Команды управления устройствами освещения
+    publish:
+      operationId: publishLightingCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+    subscribe:
+      operationId: subscribeLightingCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+  command.camera:
+    description: Команды управления камерами
+    publish:
+      operationId: publishCameraCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+    subscribe:
+      operationId: subscribeCameraCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+  command.gate:
+    description: Команды управления воротами
+    publish:
+      operationId: publishGateCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+    subscribe:
+      operationId: subscribeGateCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+
+  # ---- Общие каналы ----
+  event.device:
+    description: Общий канал для событий всех типов устройств
+    publish:
+      operationId: publishDeviceEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+    subscribe:
+      operationId: subscribeDeviceEvent
+      message:
+        $ref: '#/components/messages/DeviceStateChanged'
+  command.device:
+    description: Общий канал для команд всех типов устройств
+    publish:
+      operationId: publishDeviceCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+    subscribe:
+      operationId: subscribeDeviceCommand
+      message:
+        $ref: '#/components/messages/DeviceCommand'
+
+components:
+  messages:
+    HouseEvent:
+      summary: Событие, связанное с домом
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          eventType: { type: string, enum: [HouseCreated, HouseUpdated, HouseDeleted] }
+          timestamp: { type: string, format: date-time }
+          houseId: { type: string, format: uuid }
+          data: { type: object, properties: { name: { type: string }, address: { type: string }, ownerId: { type: string, format: uuid } } }
+    UserEvent:
+      summary: Событие, связанное с пользователем
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          eventType: { type: string, enum: [UserCreated, UserUpdated, UserDeleted] }
+          timestamp: { type: string, format: date-time }
+          userId: { type: string, format: uuid }
+          data: { type: object, properties: { email: { type: string }, fullName: { type: string } } }
+    DeviceStateChanged:
+      summary: Изменение состояния устройства
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          deviceId: { type: string, format: uuid }
+          houseId: { type: string, format: uuid }
+          deviceType: { type: string, enum: [heating, lighting, camera, gate] }
+          status: { type: string }
+          value: { type: number }
+          unit: { type: string }
+          timestamp: { type: string, format: date-time }
+    DeviceCommand:
+      summary: Команда управления устройством (от Scenario Service)
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          commandId: { type: string, format: uuid }
+          deviceId: { type: string, format: uuid }
+          command: { type: string, enum: [turn_on, turn_off, set_temperature, set_brightness, start_recording, open_gate, close_gate] }
+          parameters: { type: object, additionalProperties: true }
+          timestamp: { type: string, format: date-time }
